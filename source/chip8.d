@@ -1,4 +1,4 @@
-import string;
+import std.string;
 
 // 35 opcodes which are all 2 bytes long
 ushort opcode;
