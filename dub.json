@@ -1,0 +1,9 @@
+{
+	"name": "d_chip8",
+	"authors": [
+		"ZiHe.Goh"
+	],
+	"description": "CHIP-8 EMU in D",
+	"copyright": "Copyright © 2018, ZiHe.Goh",
+	"license": "MIT"
+}

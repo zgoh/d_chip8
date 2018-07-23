@@ -1,0 +1,14 @@
+.dub
+docs.json
+__dummy.html
+docs/
+d_chip8.so
+d_chip8.dylib
+d_chip8.dll
+d_chip8.a
+d_chip8.lib
+d_chip8-test-*
+*.exe
+*.o
+*.obj
+*.lst
