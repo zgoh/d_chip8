@@ -134,20 +134,36 @@ class Chip8
     {
       case 0x0000:
       {
-        switch (opcode & 0x000F)
+        switch (opcode & 0x00F0)
         {
-          case 0x0000: // Clears the screen
+          case 0x0000:
           {
+            // Calls RCA 1802 program at address NNN. Not necessary for most ROMs. 
           } break;
 
-          case 0x000E: // Return from subroutine
+          case 0x00E0:
           {
+            switch (opcode & 0x000F)
+            {
+              case 0x0000:
+              {
+                // Clears the screen
+                screen[] = 0;
+                drawFlag = true;
+              } break;
+
+              case 0x000E: // Return from subroutine
+              {
+                // Get last address from stack
+                const auto address = stack[--sp];
+                pc = address;
+              } break;
+
+              default: break;
+            }
           } break;
 
-          default:
-          {
-            writeln("Unknown opcode: ", opcode);
-          } break;
+          default: break;
         }
       } break;
 
@@ -328,10 +344,7 @@ class Chip8
         }
       } break;
 
-      default:
-      {
-        writeln("Unknown opcode: ", opcode);
-      } break;
+      default: break;
     }
 
     // Update timers
@@ -358,8 +371,6 @@ class Chip8
   public void Debug()
   {
     // Function to dump all register state
-    
-    //writeln("++++++++++++++++++++++++++++++++++++++++++++++");
     writef("Opcode: 0x%x\n", opcode);
     foreach (i; 0 .. 16)
     {
@@ -393,6 +404,5 @@ class Chip8
         writef("\n");
       }
     }
-
   }
 }
