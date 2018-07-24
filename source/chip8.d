@@ -387,12 +387,13 @@ class Chip8
 
     writef("I: 0x%x\n", I);
     writef("PC: 0x%x\n", pc);
+    writeln("SP: ", sp);
     writef("Delay timer: %d\n", delayTimer);
     writef("Sound timer: %d\n", soundTimer);
 
     foreach (i; 0 .. sp)
     {
-      writef("s[%d]: %d ", i, stack[i]);
+      writef("st[%d]: %d ", i, stack[i]);
       if (i != 0 && i % 4 == 0)
       {
         writef("\n");
