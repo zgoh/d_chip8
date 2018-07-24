@@ -70,8 +70,6 @@ class Chip8
   {
     // Initialize registers and memory once
 
-    // Basic fontset stored at 0x50 == 80 onwards
-
     // Application to be loaded at 0x200, pc set to 0x200 == 512
     pc = 0x200;
 
@@ -106,6 +104,8 @@ class Chip8
 
   public void Run()
   {
+    auto cycles = 1;
+    while (cycles--)
     //while (true)
     {
       // Emulate one cycle
@@ -115,7 +115,7 @@ class Chip8
         // Draw Graphics
 
       // Store key (Press and Release) state
-      SetKeys();
+      // SetKeys();
     }
 
     Debug();
@@ -155,7 +155,7 @@ class Chip8
       {
         // Jump to address NNN
         const auto address = opcode & 0x0FFF;
-
+        pc = address;
       } break;
 
       case 0x2000:
@@ -217,6 +217,11 @@ class Chip8
 
       case 0xA000:
       {
+        const auto address = opcode & 0x0FFF;
+
+        // Sets I to the address NNN. 
+        I = address;
+        Next();
       } break;
 
       case 0xB000:
@@ -290,7 +295,6 @@ class Chip8
 
           case 0xA1:  // 0xEXA1
           {
-
           } break;
 
           default: break;
@@ -330,8 +334,6 @@ class Chip8
       } break;
     }
 
-    Next();
-
     // Update timers
     if (delayTimer > 0)
       --delayTimer;
@@ -362,7 +364,7 @@ class Chip8
     // Function to dump all register state
     
     //writeln("++++++++++++++++++++++++++++++++++++++++++++++");
-    writeln("Opcode: ", opcode);
+    writef("Opcode: 0x%x\n", opcode);
     foreach (i; 0 .. 16)
     {
       writef("V[%d]: %d ", i, V[i]);
