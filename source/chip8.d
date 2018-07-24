@@ -21,9 +21,11 @@ class Chip8
   // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
   // 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
   // 0x200-0xFFF - Program ROM and work RAM
-
+  
   // Screen size: 64 x 32 = 2048 px
-  char[2048] screen;
+  const size_t screenWidth = 64;
+  const size_t screenHeight = 32;
+  char[screenWidth * screenHeight] screen;
 
   // Interrupts and hardware registers, CHIP-8 has none, but there are two timer that count ay 60 Hz,
   // will count down if set above zero.
@@ -41,6 +43,27 @@ class Chip8
 
   // Whether to draw
   bool drawFlag;
+
+  // All the required fonts
+  char fontset[80] =
+  { 
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+  };
 
   this()
   {
@@ -208,10 +231,70 @@ class Chip8
 
       case 0xD000:
       {
+        // 0xDXYN
+        // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. 
+        // Each row of 8 pixels is read as bit-coded starting from memory location I; 
+        // I value doesn’t change after the execution of this instruction. 
+        // As described above, VF is set to 1 if any screen pixels are flipped from set to unset 
+        // when the sprite is drawn, and to 0 if that doesn’t happen 
+
+        const auto X = (opcode >> 2) & 0x000F;
+        const auto Y = (opcode >> 1) & 0x000F;
+        const auto height = opcode & 0x000F;
+
+        foreach (cy; 0 .. height)
+        {
+          const auto data = memory[I + cy];
+          
+          // Always width of 1 byte
+          foreach (cx; 0 .. 8)
+          {
+            // Only look at non-blank pixels
+            if (data & (0x80 >> cx))
+            {
+              // Check if pixels is flipped from set to unset, if current bit is 1, it will be 0 after xor
+              const auto currentID = (cy + Y) * screenWidth + (cx + X);
+              if (screen[currentID])
+                V[0xF] = 1;
+              screen[currentID] ^= 0x01;
+            }
+          }
+        }
+
+        drawFlag = true;
+        Next();
+
       } break;
 
       case 0xE000:
       {
+        const auto X = (opcode >> 2) & 0x000F;
+        // Keypad                   Keyboard
+        // +-+-+-+-+                +-+-+-+-+
+        // |1|2|3|C|                |1|2|3|4|
+        // +-+-+-+-+                +-+-+-+-+
+        // |4|5|6|D|                |Q|W|E|R|
+        // +-+-+-+-+       =>       +-+-+-+-+
+        // |7|8|9|E|                |A|S|D|F|
+        // +-+-+-+-+                +-+-+-+-+
+        // |A|0|B|F|                |Z|X|C|V|
+        // +-+-+-+-+                +-+-+-+-+
+        switch (opcode & 0x00FF)
+        {
+          case 0x9E:  // 0xEX9E
+          {
+            // Skips the next instruction if the key stored in VX is pressed. 
+            // (Usually the next instruction is a jump to skip a code block) 
+            if (key[V[X]])
+              Next();
+            Next();
+          } break;
+
+          case 0xA1:  // 0xEXA1
+          {
+
+          } break;
+        }
       } break;
 
       case 0xF000:
@@ -230,9 +313,9 @@ class Chip8
             
             // Value from 0 - 255, extract the three numbers into different locations of I
             const auto val = V[X];
-            memory[I]     = val / 100;
-            memory[I + 1] = (val % 100) / 10;
-            memory[I + 2] = val % 10;
+            memory[I]      = val / 100;
+            memory[I + 1]  = (val % 100) / 10;
+            memory[I + 2]  = val % 10;
 
             Next();
           } break;
