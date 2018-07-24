@@ -1,14 +1,32 @@
+rom/*
+
+# Created by https://www.gitignore.io/api/d
+
+### D ###
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+
+# DUB
 .dub
 docs.json
 __dummy.html
 docs/
-d_chip8.so
-d_chip8.dylib
-d_chip8.dll
-d_chip8.a
-d_chip8.lib
-d_chip8-test-*
-*.exe
-*.o
-*.obj
+
+# Code coverage
 *.lst
+
+
+# End of https://www.gitignore.io/api/d
