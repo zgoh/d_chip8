@@ -186,7 +186,7 @@ class Chip8
         pc = address;
       } break;
 
-      case 0x3000: // 0x3XNN 
+      case 0x3000:  // 0x3XNN 
       {
         // Skips the next instruction if VX equals NN. 
         // (Usually the next instruction is a jump to skip a code block)
@@ -227,32 +227,93 @@ class Chip8
         // Sets VX to NN.
         const auto X = (opcode >> 8) & 0x000F;
         const auto NN = opcode & 0x00FF;
-        
+
         V[X] = NN;
         Next();
       } break;
 
-      case 0x7000:
+      case 0x7000:  // 0x7XNN
       {
+        // Adds NN to VX. (Carry flag is not changed)
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto Y = (opcode >> 4) & 0x000F;
+        
+        V[X] += V[Y];
+        Next();
       } break;
 
       case 0x8000:
       {
         switch (opcode & 0x000F)
         {
-          case 0x0004:  // 0x8XY4 
+          const auto X = (opcode >> 8) & 0x000F;
+          const auto Y = (opcode >> 4) & 0x000F;
+
+          case 0x0000:  // 0x8XY0
+          {
+            // Sets VX to the value of VY.
+            V[X] = V[Y];
+            Next();
+          } break;
+
+          case 0x0001:  // 0x8XY1
+          {
+            // Sets VX to VX or VY. (Bitwise OR operation) 
+            V[X] |= V[Y];
+            Next();
+          } break;
+
+          case 0x0002:  // 0x8XY2
+          {
+            // Sets VX to VX and VY. (Bitwise AND operation) 
+            V[X] &= V[Y];
+            Next();
+          } break;
+
+          case 0x0003:  // 0x8XY3
+          {
+            // Sets VX to VX xor VY.
+            V[X] ^= V[X] 
+            Next();
+          } break;
+
+          case 0x0004:  // 0x8XY4
           {
             // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
-            
             // Check for carry first before adding
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Check if Y is larger than the remainder from 255 - X
             V[0xF] = (V[Y] > (0xFF - V[X])) ? 1 : 0;
-            V[X] += V[Y];
+            V[X]  += V[Y];
 
             Next();
+          } break;
+
+          case 0x0005:  // 0x8XY5
+          {
+            // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't. 
+            // Check for borrow first before subtracting
+            // Check if Y is larger than the remainder from 255 - X
+            V[0xF] = (V[Y] > (0xFF - V[X])) ? 0 : 1;
+            V[X]  -= V[Y];
+            Next();
+          } break;
+
+          case 0x0006:  // 0x8XY6
+          {
+            // Shifts VY right by one and stores the result to VX 
+            // (VY remains unchanged). 
+            // VF is set to the value of the least significant bit of VY before the shift
+            V[0xF] = 0x0F & V[Y];
+            V[X]   = V[Y] >> 1;
+            Next();
+          } break;
+
+          case 0x0007:  // 0x8XY7
+          {
+          } break;
+
+          case 0x000E:  // 0x8XYE
+          {
           } break;
 
           default: break;
