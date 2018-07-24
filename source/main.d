@@ -4,52 +4,58 @@ import std.string : format, fromStringz;
 import derelict.glfw3.glfw3;
 import derelict.opengl;
 
+import chip8;
+
 void main()
 {
-  // Using Derelict to load openGL/GLFW
-  DerelictGL3.load();
-  DerelictGLFW3.load("dlls\\glfw3.dll");
+  // // Using Derelict to load openGL/GLFW
+  // DerelictGL3.load();
+  // DerelictGLFW3.load("dlls\\glfw3.dll");
 
-  // Setting error callbacks
-  glfwSetErrorCallback(&ErrorCallback);
+  // // Setting error callbacks
+  // glfwSetErrorCallback(&ErrorCallback);
 
-  if (!glfwInit())
-  {
-    throw new Exception("glfw failed to init");
-  }
+  // if (!glfwInit())
+  // {
+  //   throw new Exception("glfw failed to init");
+  // }
 
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   
-  auto window = glfwCreateWindow(800, 600, "CHIP-8", null, null);
-  if (window is null)
-  {
-    glfwTerminate();
-    throw new Exception("glfw failed to create window");
-  }
+  // auto window = glfwCreateWindow(800, 600, "CHIP-8", null, null);
+  // if (window is null)
+  // {
+  //   glfwTerminate();
+  //   throw new Exception("glfw failed to create window");
+  // }
 
-  // Setting key callbacks
-  glfwSetKeyCallback(window, &KeyCallback);
+  // // Setting key callbacks
+  // glfwSetKeyCallback(window, &KeyCallback);
 
-  glfwShowWindow(window);
-  glfwMakeContextCurrent(window);
+  // glfwShowWindow(window);
+  // glfwMakeContextCurrent(window);
 
-  // Turning on vsync
-  glfwSwapInterval(1);
+  // // Turning on vsync
+  // glfwSwapInterval(1);
 
-  // Reload after making context to use GL 3 core features
-  DerelictGL3.reload();
+  // // Reload after making context to use GL 3 core features
+  // DerelictGL3.reload();
 
-  while (!glfwWindowShouldClose(window))
-  {
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
+  // while (!glfwWindowShouldClose(window))
+  // {
+  //   glfwSwapBuffers(window);
+  //   glfwPollEvents();
+  // }
 
-  glfwDestroyWindow(window);
-  glfwTerminate();
+  // glfwDestroyWindow(window);
+  // glfwTerminate();
+
+  Chip8 chip8 = new Chip8();
+  chip8.LoadGame("roms/Pong.ch8");
+  chip8.Run();
 }
 
 extern(C) nothrow

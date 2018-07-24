@@ -38,6 +38,10 @@ class Chip8
 
   // Hex based keypad, 0x0 - 0xF
   char[16] keys;
+
+  // Whether to draw
+  bool drawFlag;
+
   this()
   {
     // Initialize registers and memory once
@@ -65,7 +69,7 @@ class Chip8
     soundTimer = 0;
   }
 
-  public void LoadGame(const string name)
+  public void LoadGame(const char[] name)
   {
     // size_t bufferSize = 2048;
     
@@ -79,25 +83,165 @@ class Chip8
     //   memory[i + 512] = buf[i];
   }
 
-  public void EmulateCycle()
+  public void Run()
+  {
+    // while (true)
+    {
+      // Emulate one cycle
+      EmulateCycle();
+
+      //if (drawFlag)
+        // Draw Graphics
+
+      // Store key (Press and Release) state
+      SetKeys();
+    }
+  }
+
+  void EmulateCycle()
   {
     // Fetch Opcode
-    // opcode = memory[pc] << 8 | memory[pc + 1];
+    opcode = memory[pc] << 8 | memory[pc + 1];
 
     // Decode Opcode
     // Execute Opcode
 
+    // Check the first bit of the opcode
+    switch (opcode & 0xF000)
+    {
+      case 0x0000:
+      {
+        switch (opcode & 0x000F)
+        {
+          case 0x0000: // Clears the screen
+          {
+          } break;
+
+          case 0x000E: // Return from subroutine
+          {
+          } break;
+
+          default:
+          {
+            writeln("Unknown opcode: ", opcode);
+          } break;
+        }
+      } break;
+
+      case 0x1000:
+      {
+        // Jump to address NNN
+        const auto address = opcode & 0x0FFF;
+
+      } break;
+
+      case 0x2000:
+      {
+        // Calls subroutine at NNN
+        const auto address = opcode & 0x0FFF;
+
+        // Push current pc onto the stack
+        stack[sp++] = pc;
+        pc = address;
+      } break;
+
+      case 0x3000:
+      {
+
+      } break;
+
+      case 0x4000:
+      {
+
+      } break;
+
+      case 0x5000:
+      {
+
+      } break;
+
+      case 0x6000:
+      {
+
+      } break;
+
+      case 0x7000:
+      {
+
+      } break;
+
+      case 0x8000:
+      {
+        switch (opcode & 0x000F)
+        {
+          case 0x0004:  // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
+          {
+            // 0x8XY4 
+            // Check for carry first before adding
+            const auto X = (opcode >> 2) & 0x000F;
+            const auto Y = (opcode >> 1) & 0x000F;
+
+            // Check if Y is larger than the remainder from 255 - X
+            vReg[0xF] = (vReg[Y] > (0xFF - vReg[X])) ? 1 : 0;
+            vReg[X] += vReg[Y];
+
+            pc += 2;
+          } break;
+
+          default:
+          {
+          } break;
+        }
+      } break;
+
+      case 0x9000:
+      {
+      } break;
+
+      case 0xA000:
+      {
+      } break;
+
+      case 0xB000:
+      {
+      } break;
+
+      case 0xC000:
+      {
+      } break;
+
+      case 0xD000:
+      {
+      } break;
+
+      case 0xE000:
+      {
+      } break;
+
+      case 0xF000:
+      {
+      } break;
+
+      default:
+      {
+        writeln("Unknown opcode: ", opcode);
+      } break;
+    }
+
     pc += 2;
+
     // Update timers
+    if (delayTimer > 0)
+      --delayTimer;
+    if (soundTimer > 0)
+    {
+      if (soundTimer == 1)
+        writeln("BEEP!");
+      --soundTimer;
+    }
   }
 
-  bool drawFlag;
-  public bool DrawFlag() 
-  { 
-    return drawFlag; 
-  }
-
-  public void SetKeys()
+  void SetKeys()
   {
   }
 }
