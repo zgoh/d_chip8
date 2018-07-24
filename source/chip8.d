@@ -169,14 +169,14 @@ class Chip8
         }
       } break;
 
-      case 0x1000:
+      case 0x1000:  // 0x1NNN 
       {
         // Jump to address NNN
         const auto address = opcode & 0x0FFF;
         pc = address;
       } break;
 
-      case 0x2000:
+      case 0x2000:  // 0x2NNN
       {
         // Calls subroutine at NNN
         const auto address = opcode & 0x0FFF;
@@ -186,20 +186,50 @@ class Chip8
         pc = address;
       } break;
 
-      case 0x3000:
+      case 0x3000: // 0x3XNN 
       {
+        // Skips the next instruction if VX equals NN. 
+        // (Usually the next instruction is a jump to skip a code block)
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto NN = opcode & 0x00FF;
+
+        if (V[X] == NN)
+          Next();
+        Next();
       } break;
 
-      case 0x4000:
+      case 0x4000:  // 0x4XNN 
       {
+        // Skips the next instruction if VX doesn't equal NN. 
+        // (Usually the next instruction is a jump to skip a code block)
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto NN = opcode & 0x00FF;
+
+        if (V[X] != NN)
+          Next();
+        Next();
       } break;
 
-      case 0x5000:
+      case 0x5000:  // 0x5XY0
       {
+        // Skips the next instruction if VX equals VY. 
+        // (Usually the next instruction is a jump to skip a code block)
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto Y = (opcode >> 4) & 0x000F;
+
+        if (V[X] == V[Y])
+          Next();
+        Next();
       } break;
 
-      case 0x6000:
+      case 0x6000:  // 0x6XNN 
       {
+        // Sets VX to NN.
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto NN = opcode & 0x00FF;
+        
+        V[X] = NN;
+        Next();
       } break;
 
       case 0x7000:
@@ -215,8 +245,8 @@ class Chip8
             // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
             
             // Check for carry first before adding
-            const auto X = (opcode >> 2) & 0x000F;
-            const auto Y = (opcode >> 1) & 0x000F;
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
 
             // Check if Y is larger than the remainder from 255 - X
             V[0xF] = (V[Y] > (0xFF - V[X])) ? 1 : 0;
@@ -259,8 +289,8 @@ class Chip8
         // As described above, VF is set to 1 if any screen pixels are flipped from set to unset 
         // when the sprite is drawn, and to 0 if that doesn’t happen 
 
-        const auto X = (opcode >> 2) & 0x000F;
-        const auto Y = (opcode >> 1) & 0x000F;
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto Y = (opcode >> 4) & 0x000F;
         const auto height = opcode & 0x000F;
 
         foreach (cy; 0 .. height)
@@ -289,7 +319,7 @@ class Chip8
 
       case 0xE000:
       {
-        const auto X = (opcode >> 2) & 0x000F;
+        const auto X = (opcode >> 8) & 0x000F;
         // Keypad                   Keyboard
         // +-+-+-+-+                +-+-+-+-+
         // |1|2|3|C|                |1|2|3|4|
@@ -331,7 +361,7 @@ class Chip8
             // place the hundreds digit in memory at location in I, 
             // the tens digit at location I+1, and the ones digit at location I+2.) 
             
-            const auto X = (opcode >> 2) & 0x000F;
+            const auto X = (opcode >> 8) & 0x000F;
             
             // Value from 0 - 255, extract the three numbers into different locations of I
             const auto val = V[X];
