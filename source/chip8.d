@@ -337,6 +337,7 @@ class Chip8
     // Update timers
     if (delayTimer > 0)
       --delayTimer;
+
     if (soundTimer > 0)
     {
       if (soundTimer == 1)
@@ -356,11 +357,6 @@ class Chip8
 
   public void Debug()
   {
-  // Hex based keypad, 0x0 - 0xF
-  char[16] keys;
-
-  // Whether to draw
-  bool drawFlag;
     // Function to dump all register state
     
     //writeln("++++++++++++++++++++++++++++++++++++++++++++++");
