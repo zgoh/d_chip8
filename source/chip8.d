@@ -45,7 +45,7 @@ class Chip8
   bool drawFlag;
 
   // All the required fonts
-  char fontset[80] =
+  char[80] fontset =
   { 
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
