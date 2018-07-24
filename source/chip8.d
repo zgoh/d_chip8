@@ -10,10 +10,10 @@ class Chip8
   char[4096] memory;
 
   // 16 8-bit data registers, V0 - VF(Flag for some registers)
-  char[16] vReg;
+  char[16] V;
 
   // 16-bit wide Index register (address)
-  ushort iReg;
+  ushort I;
 
   // 16-bit PC
   ushort pc;
@@ -52,12 +52,12 @@ class Chip8
     pc = 0x200;
 
     opcode = 0; // Reset current opcode
-    iReg   = 0; // Reset index register
+    I      = 0; // Reset index register
     sp     = 0; // Reset stack pointer
 
     // Clear display
     // Clear stack
-    vReg[]   = 0; // Clear registers v0-vF
+    V[]      = 0; // Clear registers v0-vF
     memory[] = 0; // Clear memory
 
     // Load fontset
@@ -147,45 +147,41 @@ class Chip8
 
       case 0x3000:
       {
-
       } break;
 
       case 0x4000:
       {
-
       } break;
 
       case 0x5000:
       {
-
       } break;
 
       case 0x6000:
       {
-
       } break;
 
       case 0x7000:
       {
-
       } break;
 
       case 0x8000:
       {
         switch (opcode & 0x000F)
         {
-          case 0x0004:  // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
+          case 0x0004:  // 0x8XY4 
           {
-            // 0x8XY4 
+            // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
+            
             // Check for carry first before adding
             const auto X = (opcode >> 2) & 0x000F;
             const auto Y = (opcode >> 1) & 0x000F;
 
             // Check if Y is larger than the remainder from 255 - X
-            vReg[0xF] = (vReg[Y] > (0xFF - vReg[X])) ? 1 : 0;
-            vReg[X] += vReg[Y];
+            V[0xF] = (V[Y] > (0xFF - V[X])) ? 1 : 0;
+            V[X] += V[Y];
 
-            pc += 2;
+            Next();
           } break;
 
           default:
@@ -220,6 +216,31 @@ class Chip8
 
       case 0xF000:
       {
+        switch (opcode & 0x00FF)
+        {
+          case 0x0033:  // 0xFX33
+          {
+            // Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, 
+            // the middle digit at I plus 1, and the least significant digit at I plus 2. 
+            // (In other words, take the decimal representation of VX, 
+            // place the hundreds digit in memory at location in I, 
+            // the tens digit at location I+1, and the ones digit at location I+2.) 
+            
+            const auto X = (opcode >> 2) & 0x000F;
+            
+            // Value from 0 - 255, extract the three numbers into different locations of I
+            const auto val = V[X];
+            memory[I]     = val / 100;
+            memory[I + 1] = (val % 100) / 10;
+            memory[I + 2] = val % 10;
+
+            Next();
+          } break;
+
+          default:
+          {
+          } break;
+        }
       } break;
 
       default:
@@ -228,7 +249,7 @@ class Chip8
       } break;
     }
 
-    pc += 2;
+    Next();
 
     // Update timers
     if (delayTimer > 0)
@@ -243,5 +264,10 @@ class Chip8
 
   void SetKeys()
   {
+  }
+
+  void Next()
+  {
+    pc += 2;
   }
 }
