@@ -85,8 +85,9 @@ class Chip8
     memory[] = 0; // Clear memory
 
     // Load fontset
-    //for (int i = 0; i < 80; ++i)
-      //memory[i] = chipFontset[i];
+    // Basic fontset stored at 0x50 == 80 onwards
+    for (int i = 0; i < 80; ++i)
+      memory[i + 80] = fontset[i];
 
     // Reset timers
     delayTimer = 0;
