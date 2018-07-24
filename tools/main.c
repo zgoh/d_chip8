@@ -13,7 +13,7 @@ int main(void)
 {
     const size_t sz = sizeof(game);
 
-    FILE *file = fopen("roms/test.ch8", "wb");
+    FILE *file = fopen("../roms/test.ch8", "wb");
     if (file)
     {
         fwrite(game, sizeof(char), sz, file);
