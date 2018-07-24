@@ -1,5 +1,6 @@
 import std.string;
 import std.stdio;
+import std.file : read;
 
 class Chip8
 {
@@ -46,7 +47,7 @@ class Chip8
 
   // All the required fonts
   char[80] fontset =
-  { 
+  [ 
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -63,7 +64,7 @@ class Chip8
     0xE0, 0x90, 0x90, 0x90, 0xE0, // D
     0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
-  };
+  ];
 
   this()
   {
@@ -92,23 +93,19 @@ class Chip8
     soundTimer = 0;
   }
 
-  public void LoadGame(const char[] name)
-  {
-    // size_t bufferSize = 2048;
-    
-    // // Fopen with binary
-    // auto f = File(name);
-    // auto buf = f.rawRead(new char[bufferSize]);
-    // f.close();
+  public void LoadGame(const string name)
+  { 
+    // Fopen with binary
+    auto buf = cast (char[]) read(name);
 
-    // // Fill the memory at location 0x200 == 512
-    // for(int i = 0; i < buf.length; ++i)
-    //   memory[i + 512] = buf[i];
+    // Fill the memory at location 0x200 == 512
+    foreach (i; 0 .. buf.length)
+      memory[i + 512] = buf[i];
   }
 
   public void Run()
   {
-    // while (true)
+    //while (true)
     {
       // Emulate one cycle
       EmulateCycle();
@@ -119,6 +116,8 @@ class Chip8
       // Store key (Press and Release) state
       SetKeys();
     }
+
+    Debug();
   }
 
   void EmulateCycle()
@@ -207,9 +206,7 @@ class Chip8
             Next();
           } break;
 
-          default:
-          {
-          } break;
+          default: break;
         }
       } break;
 
@@ -285,7 +282,7 @@ class Chip8
           {
             // Skips the next instruction if the key stored in VX is pressed. 
             // (Usually the next instruction is a jump to skip a code block) 
-            if (key[V[X]])
+            if (keys[V[X]])
               Next();
             Next();
           } break;
@@ -294,6 +291,8 @@ class Chip8
           {
 
           } break;
+
+          default: break;
         }
       } break;
 
@@ -320,9 +319,7 @@ class Chip8
             Next();
           } break;
 
-          default:
-          {
-          } break;
+          default: break;
         }
       } break;
 
@@ -352,5 +349,51 @@ class Chip8
   void Next()
   {
     pc += 2;
+  }
+
+  public void Debug()
+  {
+  // Hex based keypad, 0x0 - 0xF
+  char[16] keys;
+
+  // Whether to draw
+  bool drawFlag;
+    // Function to dump all register state
+    
+    //writeln("++++++++++++++++++++++++++++++++++++++++++++++");
+    writeln("Opcode: ", opcode);
+    foreach (i; 0 .. 16)
+    {
+      writef("V[%d]: %d ", i, V[i]);
+      if (i != 0 && i % 4 == 0)
+      {
+        writef("\n");
+      }
+    }
+    writef("\n");
+
+    writeln("I: ", I);
+    writeln("PC: ", pc);
+    writef("Delay timer: %d", delayTimer);
+    writef("Sound timer: %d", soundTimer);
+
+    foreach (i; 0 .. sp)
+    {
+      writef("s[%d]: %d ", i, stack[i]);
+      if (i != 0 && i % 4 == 0)
+      {
+        writef("\n");
+      }
+    }
+
+    foreach (i; 0 .. 16)
+    {
+      writef("keys[%d]: %d ", i, keys[i]);
+      if (i != 0 && i % 4 == 0)
+      {
+        writef("\n");
+      }
+    }
+
   }
 }

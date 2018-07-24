@@ -54,7 +54,7 @@ void main()
   // glfwTerminate();
 
   Chip8 chip8 = new Chip8();
-  chip8.LoadGame("roms/Pong.ch8");
+  chip8.LoadGame("roms/test.ch8");
   chip8.Run();
 }
 
