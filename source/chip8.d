@@ -94,7 +94,7 @@ class Chip8
 
   public void LoadGame(const string name)
   { 
-    // Fopen with binary
+    // Read file
     auto buf = cast (char[]) read(name);
 
     // Fill the memory at location 0x200 == 512
@@ -154,6 +154,8 @@ class Chip8
 
               case 0x000E: // Return from subroutine
               {
+                assert(sp > 0);
+
                 // Get last address from stack
                 const auto address = stack[--sp];
                 pc = address;
@@ -370,6 +372,7 @@ class Chip8
 
   public void Debug()
   {
+    writeln("++++++++++++++++++++ Debug ++++++++++++++++++++");
     // Function to dump all register state
     writef("Opcode: 0x%x\n", opcode);
     foreach (i; 0 .. 16)
@@ -382,10 +385,10 @@ class Chip8
     }
     writef("\n");
 
-    writeln("I: ", I);
-    writeln("PC: ", pc);
-    writef("Delay timer: %d", delayTimer);
-    writef("Sound timer: %d", soundTimer);
+    writef("I: 0x%x\n", I);
+    writef("PC: 0x%x\n", pc);
+    writef("Delay timer: %d\n", delayTimer);
+    writef("Sound timer: %d\n", soundTimer);
 
     foreach (i; 0 .. sp)
     {
@@ -395,6 +398,7 @@ class Chip8
         writef("\n");
       }
     }
+    writef("\n");
 
     foreach (i; 0 .. 16)
     {
@@ -404,5 +408,7 @@ class Chip8
         writef("\n");
       }
     }
+    writef("\n");
+    writeln("++++++++++++++++++++++++++++++++++++++++++++++++");
   }
 }
