@@ -1,6 +1,7 @@
 import std.string;
 import std.stdio;
 import std.file : read;
+import std.random : Random, uniform;
 
 class Chip8
 {
@@ -246,11 +247,11 @@ class Chip8
       {
         switch (opcode & 0x000F)
         {
-          const auto X = (opcode >> 8) & 0x000F;
-          const auto Y = (opcode >> 4) & 0x000F;
-
           case 0x0000:  // 0x8XY0
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Sets VX to the value of VY.
             V[X] = V[Y];
             Next();
@@ -258,6 +259,9 @@ class Chip8
 
           case 0x0001:  // 0x8XY1
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Sets VX to VX or VY. (Bitwise OR operation) 
             V[X] |= V[Y];
             Next();
@@ -265,6 +269,9 @@ class Chip8
 
           case 0x0002:  // 0x8XY2
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Sets VX to VX and VY. (Bitwise AND operation) 
             V[X] &= V[Y];
             Next();
@@ -272,13 +279,19 @@ class Chip8
 
           case 0x0003:  // 0x8XY3
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Sets VX to VX xor VY.
-            V[X] ^= V[X] 
+            V[X] ^= V[X];
             Next();
           } break;
 
           case 0x0004:  // 0x8XY4
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
             // Check for carry first before adding
             // Check if Y is larger than the remainder from 255 - X
@@ -290,6 +303,9 @@ class Chip8
 
           case 0x0005:  // 0x8XY5
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't. 
             // Check for borrow first before subtracting
             // Check if Y is larger than the remainder from 255 - X
@@ -300,6 +316,9 @@ class Chip8
 
           case 0x0006:  // 0x8XY6
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Shifts VY right by one and stores the result to VX 
             // (VY remains unchanged). 
             // VF is set to the value of the least significant bit of VY before the shift
@@ -310,15 +329,21 @@ class Chip8
 
           case 0x0007:  // 0x8XY7
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+
             // Sets VX to VY minus VX. 
             // VF is set to 0 when there's a borrow, and 1 when there isn't. 
             V[0xF] = V[Y] > V[X] ? 1 : 0;
-            V[X]   = V[Y] - V[X];
+            V[X]   = cast (char)(V[Y] - V[X]);
             Next();
           } break;
 
           case 0x000E:  // 0x8XYE
           {
+            const auto X = (opcode >> 8) & 0x000F;
+            const auto Y = (opcode >> 4) & 0x000F;
+            
             // Shifts VY left by one and copies the result to VX. 
             // VF is set to the value of the most significant bit of VY before the shift.
             V[0xF] = V[Y] & 0xF000;
@@ -331,8 +356,18 @@ class Chip8
         }
       } break;
 
-      case 0x9000:
+      case 0x9000:  // 0x9XY0
       {
+        // Skips the next instruction if VX doesn't equal VY. 
+        // (Usually the next instruction is a jump to skip a code block)
+        assert(!(opcode & 0x000F));
+
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto Y = (opcode >> 4) & 0x000F;
+
+        if (V[X] != V[Y])
+          Next();
+        Next();
       } break;
 
       case 0xA000:
@@ -344,12 +379,24 @@ class Chip8
         Next();
       } break;
 
-      case 0xB000:
+      case 0xB000:  // 0xBNNN
       {
+        // Jumps to the address NNN plus V0
+        const auto NNN = opcode & 0x0FFF;
+        pc = V[0x0] + NNN;
       } break;
 
-      case 0xC000:
+      case 0xC000:  // 0xCXNN
       {
+        // Sets VX to the result of a bitwise and operation on a random number 
+        // (Typically: 0 to 255) and NN.
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto NN = opcode & 0x00FF;
+
+        Random gen;
+        const auto r = uniform(0x0, 0xFF, gen);
+        V[X] = r & NN;
+        Next();
       } break;
 
       case 0xD000:
