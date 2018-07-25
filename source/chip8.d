@@ -310,10 +310,21 @@ class Chip8
 
           case 0x0007:  // 0x8XY7
           {
+            // Sets VX to VY minus VX. 
+            // VF is set to 0 when there's a borrow, and 1 when there isn't. 
+            V[0xF] = V[Y] > V[X] ? 1 : 0;
+            V[X]   = V[Y] - V[X];
+            Next();
           } break;
 
           case 0x000E:  // 0x8XYE
           {
+            // Shifts VY left by one and copies the result to VX. 
+            // VF is set to the value of the most significant bit of VY before the shift.
+            V[0xF] = V[Y] & 0xF000;
+            V[Y] <<= 1;
+            V[X] = V[Y];
+            Next();
           } break;
 
           default: break;
