@@ -137,7 +137,7 @@ class Chip8
       {
         switch (opcode & 0x00F0)
         {
-          case 0x0000:
+          case 0x0000:  // 0x0NNN 
           {
             // Calls RCA 1802 program at address NNN. Not necessary for most ROMs. 
           } break;
@@ -146,7 +146,7 @@ class Chip8
           {
             switch (opcode & 0x000F)
             {
-              case 0x0000:
+              case 0x0000:  // 0x00E0 
               {
                 // Clears the screen
                 screen[] = 0;
@@ -154,8 +154,9 @@ class Chip8
                 Next();
               } break;
 
-              case 0x000E: // Return from subroutine
+              case 0x000E:  // 0x00EE
               {
+                // Return from subroutine
                 assert(sp > 0);
 
                 // Get last address from stack
@@ -166,7 +167,6 @@ class Chip8
               default: break;
             }
           } break;
-
           default: break;
         }
       } break;
@@ -246,13 +246,13 @@ class Chip8
 
       case 0x8000:
       {
+        const auto X = (opcode >> 8) & 0x000F;
+        const auto Y = (opcode >> 4) & 0x000F;
+
         switch (opcode & 0x000F)
         {
           case 0x0000:  // 0x8XY0
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Sets VX to the value of VY.
             V[X] = V[Y];
             Next();
@@ -260,9 +260,6 @@ class Chip8
 
           case 0x0001:  // 0x8XY1
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Sets VX to VX or VY. (Bitwise OR operation) 
             V[X] |= V[Y];
             Next();
@@ -270,9 +267,6 @@ class Chip8
 
           case 0x0002:  // 0x8XY2
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Sets VX to VX and VY. (Bitwise AND operation) 
             V[X] &= V[Y];
             Next();
@@ -280,9 +274,6 @@ class Chip8
 
           case 0x0003:  // 0x8XY3
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Sets VX to VX xor VY.
             V[X] ^= V[X];
             Next();
@@ -290,23 +281,16 @@ class Chip8
 
           case 0x0004:  // 0x8XY4
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Adds VY to VX. VF is set to 1 when there's a carry, 0 otherwise
             // Check for carry first before adding
             // Check if Y is larger than the remainder from 255 - X
             V[0xF] = (V[Y] > (0xFF - V[X])) ? 1 : 0;
             V[X]  += V[Y];
-
             Next();
           } break;
 
           case 0x0005:  // 0x8XY5
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't. 
             // Check for borrow first before subtracting
             // Check if Y is larger than the remainder from 255 - X
@@ -317,9 +301,6 @@ class Chip8
 
           case 0x0006:  // 0x8XY6
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Shifts VY right by one and stores the result to VX 
             // (VY remains unchanged). 
             // VF is set to the value of the least significant bit of VY before the shift
@@ -330,9 +311,6 @@ class Chip8
 
           case 0x0007:  // 0x8XY7
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-
             // Sets VX to VY minus VX. 
             // VF is set to 0 when there's a borrow, and 1 when there isn't. 
             V[0xF] = V[Y] > V[X] ? 1 : 0;
@@ -342,9 +320,6 @@ class Chip8
 
           case 0x000E:  // 0x8XYE
           {
-            const auto X = (opcode >> 8) & 0x000F;
-            const auto Y = (opcode >> 4) & 0x000F;
-            
             // Shifts VY left by one and copies the result to VX. 
             // VF is set to the value of the most significant bit of VY before the shift.
             V[0xF] = V[Y] & 0xF000;
@@ -400,9 +375,8 @@ class Chip8
         Next();
       } break;
 
-      case 0xD000:
+      case 0xD000:  // 0xDXYN
       {
-        // 0xDXYN
         // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. 
         // Each row of 8 pixels is read as bit-coded starting from memory location I; 
         // I value doesn’t change after the execution of this instruction. 
@@ -463,6 +437,11 @@ class Chip8
 
           case 0xA1:  // 0xEXA1
           {
+            // Skips the next instruction if the key stored in VX isn't pressed. 
+            // (Usually the next instruction is a jump to skip a code block) 
+            if (!keys[V[X]])
+              Next();
+            Next();
           } break;
 
           default: break;
@@ -471,8 +450,54 @@ class Chip8
 
       case 0xF000:
       {
+        const auto X = (opcode >> 8) & 0x000F;
+
         switch (opcode & 0x00FF)
         {
+          case 0x0007:  // 0xFX07
+          {
+            // Sets VX to the value of the delay timer. 
+            V[X] = delayTimer;
+            Next();
+          } break;
+
+          case 0x000A:  // 0xFX0A
+          {
+            // TODO:
+            // A key press is awaited, and then stored in VX. 
+            // (Blocking Operation. All instruction halted until next key event)
+            Next();
+          }
+
+          case 0x0015:  // 0xFX15
+          {
+            // Sets the delay timer to VX.
+            delayTimer = V[X];
+            Next();
+          } break;
+
+          case 0x0018:  // 0xFX18
+          {
+            // Sets the sound timer to VX.
+            soundTimer = V[X];
+            Next();
+          } break;
+
+          case 0x001E:  // 0xFX1E
+          {
+            // Adds VX to I
+            I += V[X];
+            Next();
+          } break;
+
+          case 0x0029:  // 0xFX29
+          {
+            // Sets I to the location of the sprite for the character in VX. 
+            // Characters 0-F (in hexadecimal) are represented by a 4x5 font. 
+            I = fontset[V[X]];
+            Next();
+          } break;
+
           case 0x0033:  // 0xFX33
           {
             // Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, 
@@ -481,14 +506,33 @@ class Chip8
             // place the hundreds digit in memory at location in I, 
             // the tens digit at location I+1, and the ones digit at location I+2.) 
             
-            const auto X = (opcode >> 8) & 0x000F;
-            
             // Value from 0 - 255, extract the three numbers into different locations of I
             const auto val = V[X];
             memory[I]      = val / 100;
             memory[I + 1]  = (val % 100) / 10;
             memory[I + 2]  = val % 10;
+            Next();
+          } break;
 
+          case 0x0055:  // 0xFX55
+          {
+            // Stores V0 to VX (including VX) in memory starting at address I. 
+            // The offset from I is increased by 1 for each value written, but I itself is left unmodified. 
+            for (char i = 0; i <= X; ++i)
+            {
+              memory[I + i] = V[i];
+            }
+            Next();
+          } break;
+
+          case 0x0065:  // 0xFX65
+          {
+            // Fills V0 to VX (including VX) with values from memory starting at address I. 
+            // The offset from I is increased by 1 for each value written, but I itself is left unmodified. 
+            for (char i = 0; i <= X; ++i)
+            {
+              V[i] = memory[I + i];
+            }
             Next();
           } break;
 
