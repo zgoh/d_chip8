@@ -467,7 +467,7 @@ class Chip8
             // A key press is awaited, and then stored in VX. 
             // (Blocking Operation. All instruction halted until next key event)
             Next();
-          }
+          } break;
 
           case 0x0015:  // 0xFX15
           {
