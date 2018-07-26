@@ -151,6 +151,7 @@ class Chip8
                 // Clears the screen
                 screen[] = 0;
                 drawFlag = true;
+                Next();
               } break;
 
               case 0x000E: // Return from subroutine
