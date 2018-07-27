@@ -309,7 +309,7 @@ class Chip8
             // Shifts VY right by one and stores the result to VX 
             // (VY remains unchanged). 
             // VF is set to the value of the least significant bit of VY before the shift
-            V[0xF] = 0x0F & V[Y];
+            V[0xF] = 0x01 & V[Y];
             V[X]   = V[Y] >> 1;
             Next();
           } break;
