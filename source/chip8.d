@@ -105,7 +105,7 @@ class Chip8
 
   public void Run()
   {
-    auto cycles = 1;
+    auto cycles = 10;
     while (cycles--)
     //while (true)
     {
@@ -239,7 +239,7 @@ class Chip8
         // Adds NN to VX. (Carry flag is not changed)
         const auto X = (opcode >> 8) & 0x000F;
         const auto NN = opcode & 0x00FF;
-        
+
         V[X] += NN;
         Next();
       } break;
@@ -576,7 +576,7 @@ class Chip8
     writef("Opcode: 0x%x\n", opcode);
     foreach (i; 0 .. 16)
     {
-      writef("V[%d]: %x ", i, V[i]);
+      writef("V[%x]: %x ", i, V[i]);
       if (i != 0 && i % 4 == 0)
       {
         writef("\n");
