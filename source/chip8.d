@@ -293,14 +293,13 @@ class Chip8
           {
             // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't. 
             // Check for borrow first before subtracting
-            V[0xF] = (V[X] >= V[Y]) ? 1 : 0;
+            V[0xF] = V[X] >= V[Y] ? 1 : 0;
 
            // If there's a borrow, we use the bigger number to minus the smaller num
             if (!V[0xF])
               V[X] = cast (char)(V[Y] - V[X]);
             else
               V[X] -= V[Y];
-
             Next();
           } break;
 
@@ -318,8 +317,12 @@ class Chip8
           {
             // Sets VX to VY minus VX. 
             // VF is set to 0 when there's a borrow, and 1 when there isn't. 
-            V[0xF] = V[Y] > V[X] ? 1 : 0;
-            V[X]   = cast (char)(V[Y] - V[X]);
+            V[0xF] = V[Y] >= V[X] ? 1 : 0;
+            // If there's a borrow, we use the bigger number to minus the smaller num
+            if (!V[0xF])
+              V[X] -= V[Y];
+            else
+              V[X] = cast (char)(V[Y] - V[X]);
             Next();
           } break;
 
@@ -327,7 +330,7 @@ class Chip8
           {
             // Shifts VY left by one and copies the result to VX. 
             // VF is set to the value of the most significant bit of VY before the shift.
-            V[0xF] = V[Y] & 0xF000;
+            V[0xF] = V[Y] & 0x80;
             V[Y] <<= 1;
             V[X] = V[Y];
             Next();
