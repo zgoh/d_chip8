@@ -571,7 +571,7 @@ class Chip8
     writef("Opcode: 0x%x\n", opcode);
     foreach (i; 0 .. 16)
     {
-      writef("V[%d]: %d ", i, V[i]);
+      writef("V[%d]: %x ", i, V[i]);
       if (i != 0 && i % 4 == 0)
       {
         writef("\n");
@@ -587,17 +587,19 @@ class Chip8
 
     foreach (i; 0 .. sp)
     {
-      writef("st[%d]: %d ", i, stack[i]);
+      writef("st[%d]: %x ", i, stack[i]);
       if (i != 0 && i % 4 == 0)
       {
         writef("\n");
       }
     }
-    writef("\n");
+    // Otherwise it will print a blank line
+    if (sp)
+      writef("\n");
 
     foreach (i; 0 .. 16)
     {
-      writef("keys[%d]: %d ", i, keys[i]);
+      writef("keys[%d]: %x ", i, keys[i]);
       if (i != 0 && i % 4 == 0)
       {
         writef("\n");
