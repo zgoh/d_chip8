@@ -238,9 +238,9 @@ class Chip8
       {
         // Adds NN to VX. (Carry flag is not changed)
         const auto X = (opcode >> 8) & 0x000F;
-        const auto Y = (opcode >> 4) & 0x000F;
+        const auto NN = opcode & 0x00FF;
         
-        V[X] += V[Y];
+        V[X] += NN;
         Next();
       } break;
 
