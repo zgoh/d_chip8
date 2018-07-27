@@ -275,7 +275,7 @@ class Chip8
           case 0x0003:  // 0x8XY3
           {
             // Sets VX to VX xor VY.
-            V[X] ^= V[X];
+            V[X] ^= V[Y];
             Next();
           } break;
 
@@ -293,9 +293,14 @@ class Chip8
           {
             // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't. 
             // Check for borrow first before subtracting
-            // Check if Y is larger than the remainder from 255 - X
-            V[0xF] = (V[Y] > (0xFF - V[X])) ? 0 : 1;
-            V[X]  -= V[Y];
+            V[0xF] = (V[X] >= V[Y]) ? 1 : 0;
+
+           // If there's a borrow, we use the bigger number to minus the smaller num
+            if (!V[0xF])
+              V[X] = cast (char)(V[Y] - V[X]);
+            else
+              V[X] -= V[Y];
+
             Next();
           } break;
 
