@@ -105,8 +105,8 @@ class Chip8
 
   public void Run()
   {
-    auto cycles = 10;
-    while (cycles--)
+    //auto cycles = 10;
+    //while (cycles--)
     //while (true)
     {
       // Emulate one cycle
@@ -119,7 +119,7 @@ class Chip8
       // SetKeys();
     }
 
-    Debug();
+    //Debug();
   }
 
   void EmulateCycle()
@@ -354,7 +354,7 @@ class Chip8
         Next();
       } break;
 
-      case 0xA000:
+      case 0xA000:  // 0xANNN 
       {
         const auto address = opcode & 0x0FFF;
 
@@ -563,8 +563,10 @@ class Chip8
     }
   }
 
-  void SetKeys()
+  public void SetKeys(char key, char state) nothrow
   {
+    assert(key <= 0xF);
+    keys[key] = state;
   }
 
   void Next()
