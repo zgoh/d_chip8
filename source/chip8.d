@@ -43,8 +43,20 @@ class Chip8
   // Hex based keypad, 0x0 - 0xF
   char[16] keys;
 
-  // Whether to draw
-  bool drawFlag;
+  size_t GetWidth() const
+  {
+    return screenWidth;
+  }
+
+  size_t GetHeight() const
+  {
+    return screenHeight;
+  }
+
+  public char* GetScreen() const
+  {
+    return cast(char *)screen;
+  }
 
   // All the required fonts
   char[80] fontset =
@@ -79,6 +91,8 @@ class Chip8
     sp     = 0; // Reset stack pointer
 
     // Clear display
+    screen[] = 0; // Clear screen
+    
     // Clear stack
     V[]      = 0; // Clear registers v0-vF
     memory[] = 0; // Clear memory
@@ -150,7 +164,7 @@ class Chip8
               {
                 // Clears the screen
                 screen[] = 0;
-                drawFlag = true;
+                //drawFlag = true;
                 Next();
               } break;
 
@@ -414,7 +428,7 @@ class Chip8
           }
         }
 
-        drawFlag = true;
+        //drawFlag = true;
         Next();
 
       } break;

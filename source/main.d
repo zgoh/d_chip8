@@ -4,10 +4,13 @@ import std.string : format, fromStringz;
 import derelict.glfw3.glfw3;
 import derelict.opengl;
 import chip8;
+import shaders;
 
 static bool isRunning = true;
 static GLFWwindow *window;
 static Chip8 emulator;
+
+static GLuint fullscreenTriangleVAO;
 
 void main()
 {
@@ -18,6 +21,10 @@ void main()
 
 void Init()
 {
+  // Load the designated rom and run the emulator
+  emulator = new Chip8();
+  emulator.LoadGame("roms/test.ch8");
+
   // Using Derelict to load openGL/GLFW
   DerelictGL3.load();
   DerelictGLFW3.load("dlls\\glfw3.dll");
@@ -34,8 +41,12 @@ void Init()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+  const auto width = emulator.GetWidth();
+  const auto height = emulator.GetHeight();
+  const auto buffer = emulator.GetScreen();
   
-  window = glfwCreateWindow(800, 600, "CHIP-8", null, null);
+  window = glfwCreateWindow(width * 5, height * 5, "CHIP-8", null, null);
   if (window is null)
   {
     glfwTerminate();
@@ -54,16 +65,49 @@ void Init()
   // Reload after making context to use GL 3 core features
   DerelictGL3.reload();
 
-  // Load the designated rom and run the emulator
-  emulator = new Chip8();
-  emulator.LoadGame("roms/test.ch8");
+  // Create textures for the buffer
+  GLuint bufferTexture;
+  glGenTextures(1, &bufferTexture);
+  glBindTexture(GL_TEXTURE_2D, bufferTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, cast(char *)buffer);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  // Create a triangular mesh for drawing background
+  glGenVertexArrays(1, &fullscreenTriangleVAO);
+
+  // Create a default shader
+  const auto shaderID = CreateShaders();
+  glUseProgram(shaderID);
+
+  GLint location = glGetUniformLocation(shaderID, "buffer");
+  glUniform1i(location, 0);
+
+  glDisable(GL_DEPTH_TEST);
+  glActiveTexture(GL_TEXTURE0);
+  glBindVertexArray(fullscreenTriangleVAO);
 }
 
 void Frame()
 {
+  const auto width = emulator.GetWidth();
+  const auto height = emulator.GetHeight();
+  const auto buffer = emulator.GetScreen();
+
   while (isRunning && !glfwWindowShouldClose(window))
   {
     emulator.Run();
+
+    glTexSubImage2D(
+      GL_TEXTURE_2D, 0, 0, 0,
+      width, height,
+      GL_RGBA, GL_UNSIGNED_INT_8_8_8_8,
+      cast(char *)buffer
+    );
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     // Get buffer to draw from Chip-8
     glfwSwapBuffers(window);
