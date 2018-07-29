@@ -99,7 +99,7 @@ class Chip8
     sp     = 0; // Reset stack pointer
 
     // Clear display
-    screen[] = 0xFF; // Clear screen
+    screen[] = 0x00; // Clear screen
     
     // Clear stack
     V[]      = 0; // Clear registers v0-vF
@@ -149,7 +149,7 @@ class Chip8
     // Fetch Opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
 
-    writef("0x%x\n", opcode);
+    // writefln("0x%x", opcode);
 
     // Decode Opcode
     // Execute Opcode
@@ -420,6 +420,8 @@ class Chip8
         const auto Y = (opcode >> 4) & 0x000F;
         const auto height = opcode & 0x000F;
 
+        V[0xF] = 0;
+        
         foreach (cy; 0 .. height)
         {
           const auto data = memory[I + cy];
@@ -430,10 +432,11 @@ class Chip8
             // Only look at non-blank pixels
             if (data & (0x80 >> cx))
             {
-              // Check if pixels is flipped from set to unset, if current bit is 1, it will be 0 after xor
               const auto currentID = (cy + Y) * screenWidth + (cx + X);
               if (screen[currentID])
                 V[0xF] = 1;
+
+              // Check if pixels is flipped from set to unset, if current bit is 1, it will be 0 after xor
               screen[currentID] ^= 0x01;
             }
           }
