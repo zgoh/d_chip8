@@ -6,8 +6,8 @@
 
 char game[] = {
     // Opcode     // Functionality
+    0x00, 0xE0,   // 00E0: Clear screen
     // 0x00, 0xEE,   // 00EE: Return from subroutine
-    
     // 0x21, 0x23,   // 2NNN: Call subroutine at 123
     // 0x31, 0x00,   // 3XNN: Skips the next instruction if V1 equals 23
     // 0x41, 0x00,   // 4XNN: Skips the next instruction if V1 not equals 12
