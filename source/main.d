@@ -23,7 +23,7 @@ void Init()
 {
   // Load the designated rom and run the emulator
   emulator = new Chip8();
-  emulator.LoadGame("roms/test.ch8");
+  emulator.LoadGame("roms/pong.ch8");
 
   // Using Derelict to load openGL/GLFW
   DerelictGL3.load();
@@ -44,7 +44,7 @@ void Init()
 
   const auto width = emulator.GetWidth();
   const auto height = emulator.GetHeight();
-  const auto buffer = emulator.GetScreen();
+  const auto buffer = GetBuffer(emulator.GetScreen(), width, height);
   
   window = glfwCreateWindow(width * 5, height * 5, "CHIP-8", null, null);
   if (window is null)
@@ -94,18 +94,21 @@ void Frame()
 {
   const auto width = emulator.GetWidth();
   const auto height = emulator.GetHeight();
-  const auto buffer = emulator.GetScreen();
 
   while (isRunning && !glfwWindowShouldClose(window))
   {
     emulator.Run();
 
-    glTexSubImage2D(
-      GL_TEXTURE_2D, 0, 0, 0,
-      width, height,
-      GL_RGBA, GL_UNSIGNED_INT_8_8_8_8,
-      cast(char *)buffer
-    );
+    if (emulator.DrawFlag())
+    {
+      const auto buffer = GetBuffer(emulator.GetScreen(), width, height);
+      glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0,
+        width, height,
+        GL_RGBA, GL_UNSIGNED_INT_8_8_8_8,
+        cast(char *)buffer
+      );
+    }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -124,6 +127,19 @@ void Destroy()
 void Stop() nothrow
 {
   isRunning = false;
+}
+
+uint[] GetBuffer(const char[] screen, size_t width, size_t height)
+{
+  uint[] buffer = new uint[width * height];
+
+  for (int i = 0; i < screen.length; ++i)
+  {
+    // CHIP 8 supports Black/White
+    buffer[i] = screen[i] == 0 ? 0x000000FF : 0xFFFFFFFF;
+  }
+
+  return buffer;
 }
 
 extern(C) nothrow

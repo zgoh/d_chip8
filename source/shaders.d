@@ -40,7 +40,7 @@ void ValidateShader(GLuint shader, string file)
 
   if (length > 0)
   {
-    writeln("Shader %d(%s) compile error: %s\n", shader, (file ? file: ""), buffer);
+    writeln("Shader %d(%s) compile error: %s\n", shader, (file ? file : ""), buffer);
   }
 }
 

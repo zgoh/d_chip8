@@ -43,6 +43,9 @@ class Chip8
   // Hex based keypad, 0x0 - 0xF
   char[16] keys;
 
+  // Whether to draw or not
+  bool drawFlag;
+
   size_t GetWidth() const
   {
     return screenWidth;
@@ -53,9 +56,14 @@ class Chip8
     return screenHeight;
   }
 
-  public char* GetScreen() const
+  char[2048] GetScreen() const
   {
-    return cast(char *)screen;
+    return screen;
+  }
+
+  bool DrawFlag() const
+  {
+    return drawFlag;
   }
 
   // All the required fonts
@@ -91,7 +99,7 @@ class Chip8
     sp     = 0; // Reset stack pointer
 
     // Clear display
-    screen[] = 0; // Clear screen
+    screen[] = 0xFF; // Clear screen
     
     // Clear stack
     V[]      = 0; // Clear registers v0-vF
@@ -107,7 +115,7 @@ class Chip8
     soundTimer = 0;
   }
 
-  public void LoadGame(const string name)
+  void LoadGame(const string name)
   { 
     // Read file
     auto buf = cast (char[]) read(name);
@@ -117,7 +125,7 @@ class Chip8
       memory[i + 512] = buf[i];
   }
 
-  public void Run()
+  void Run()
   {
     //auto cycles = 10;
     //while (cycles--)
@@ -141,6 +149,8 @@ class Chip8
     // Fetch Opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
 
+    writef("0x%x\n", opcode);
+
     // Decode Opcode
     // Execute Opcode
 
@@ -163,8 +173,8 @@ class Chip8
               case 0x0000:  // 0x00E0 
               {
                 // Clears the screen
-                screen[] = 0;
-                //drawFlag = true;
+                screen[] = 0x00;
+                drawFlag = true;
                 Next();
               } break;
 
@@ -428,7 +438,7 @@ class Chip8
           }
         }
 
-        //drawFlag = true;
+        drawFlag = true;
         Next();
 
       } break;
@@ -577,18 +587,18 @@ class Chip8
     }
   }
 
-  public void SetKeys(char key, char state) nothrow
+  void SetKeys(char key, char state) nothrow
   {
     assert(key <= 0xF);
     keys[key] = state;
   }
 
-  void Next()
+  private void Next()
   {
     pc += 2;
   }
 
-  public void Debug()
+  void Debug()
   {
     writeln("++++++++++++++++++++ Debug ++++++++++++++++++++");
     // Function to dump all register state
