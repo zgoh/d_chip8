@@ -127,19 +127,8 @@ class Chip8
 
   void Run()
   {
-    //auto cycles = 10;
-    //while (cycles--)
-    //while (true)
-    {
       // Emulate one cycle
-      EmulateCycle();
-
-      //if (drawFlag)
-        // Draw Graphics
-
-      // Store key (Press and Release) state
-      // SetKeys();
-    }
+    // EmulateCycle();
 
     //Debug();
   }
