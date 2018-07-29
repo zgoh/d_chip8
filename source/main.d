@@ -5,6 +5,7 @@ import derelict.glfw3.glfw3;
 import derelict.opengl;
 import chip8;
 import shaders;
+import core.thread;
 
 static bool isRunning = true;
 static GLFWwindow *window;
@@ -130,6 +131,8 @@ void Frame()
     // Get buffer to draw from Chip-8
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    Thread.sleep( dur!("msecs")( 50 ) ); // sleep for 5 seconds
   }
 }
 
