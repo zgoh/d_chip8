@@ -12,6 +12,9 @@ static Chip8 emulator;
 
 static GLuint fullscreenTriangleVAO;
 
+const static bool stepMode = false;
+static bool hasStep = false;
+
 void main()
 {
   Init();
@@ -97,8 +100,20 @@ void Frame()
 
   while (isRunning && !glfwWindowShouldClose(window))
   {
-    emulator.Run();
+    if (stepMode)
+    {
+      // Wait for key press before proceed to emulate
+      if (!hasStep)
+      {
+        // Get buffer to draw from Chip-8
+        glfwSwapBuffers(window);
+        glfwPollEvents();
 
+        continue;
+      }
+      hasStep = false;
+    }
+    emulator.Run();
     if (emulator.DrawFlag())
     {
       const auto buffer = GetBuffer(emulator.GetScreen(), width, height);
@@ -177,6 +192,14 @@ extern(C) nothrow
         Stop();
       break;
 
+    case GLFW_KEY_SPACE:
+      if (action == GLFW_PRESS)
+        hasStep = true;
+      break;
+    
+    /*
+      CHIP-8 Keys
+    */
     case GLFW_KEY_X:
       keyCode = 0x0;
       break;
