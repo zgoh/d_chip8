@@ -186,6 +186,7 @@ class Chip8
                 // Get last address from stack
                 const auto address = stack[--sp];
                 pc = address;
+                Next();
               } break;
 
               default: break;
