@@ -106,9 +106,8 @@ class Chip8
     memory[] = 0; // Clear memory
 
     // Load fontset
-    // Basic fontset stored at 0x50 == 80 onwards
-    for (int i = 0; i < 80; ++i)
-      memory[i + 80] = fontset[i];
+    foreach (i; 0 .. 80)
+      memory[i] = fontset[i];
 
     // Reset timers
     delayTimer = 0;
@@ -407,6 +406,10 @@ class Chip8
 
         const auto X = (opcode >> 8) & 0x000F;
         const auto Y = (opcode >> 4) & 0x000F;
+
+        const auto px = V[X];
+        const auto py = V[Y];
+
         const auto height = opcode & 0x000F;
 
         V[0xF] = 0;
@@ -421,7 +424,7 @@ class Chip8
             // Only look at non-blank pixels
             if (data & (0x80 >> cx))
             {
-              const auto currentID = (cy + Y) * screenWidth + (cx + X);
+              const auto currentID = screenWidth * (cy + py) + cx + px;
               if (screen[currentID])
                 V[0xF] = 1;
 
