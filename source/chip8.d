@@ -562,6 +562,10 @@ class Chip8
             {
               V[i] = memory[I + i];
             }
+
+            // TODO: 
+            // On the original interpreter, when the operation is done, I = I + X + 1.
+
             Next();
           } break;
 
