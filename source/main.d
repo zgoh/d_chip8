@@ -132,7 +132,7 @@ void Frame()
     glfwSwapBuffers(window);
     glfwPollEvents();
 
-    Thread.sleep( dur!("msecs")( 50 ) ); // sleep for 5 seconds
+    Thread.sleep( dur!("msecs")( 10 ) );
   }
 }
 
