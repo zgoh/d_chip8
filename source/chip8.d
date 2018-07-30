@@ -127,7 +127,7 @@ class Chip8
 
   void Run()
   {
-      // Emulate one cycle
+    // Emulate one cycle
     EmulateCycle();
 
     //Debug();
