@@ -11,10 +11,10 @@ const string vertexShader =
   ~"\n"
   ~"void main(void){\n"
   ~"\n"
-  ~"    TexCoord.x = (gl_VertexID == 2)? 2.0: 0.0;\n"
-  ~"    TexCoord.y = (gl_VertexID == 1)? 2.0: 0.0;\n"
+  ~"    TexCoord.x = (gl_VertexID == 2) ? 2.0: 0.0;\n"
+  ~"    TexCoord.y = (gl_VertexID == 1) ? 2.0: 0.0;\n"
   ~"    \n"
-  ~"    gl_Position = vec4(2.0 * TexCoord - 1.0, 0.0, 1.0);\n"
+  ~"    gl_Position = vec4(2.0 * TexCoord.x - 1.0, 1.0 - 2.0 * TexCoord.y, 0.0, 1.0);\n"
   ~"}\n";
 
 const string fragmentShader =
