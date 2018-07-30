@@ -128,7 +128,7 @@ class Chip8
   void Run()
   {
       // Emulate one cycle
-    // EmulateCycle();
+    EmulateCycle();
 
     //Debug();
   }
@@ -510,6 +510,7 @@ class Chip8
 
           case 0x001E:  // 0xFX1E
           {
+            // TODO: Check for carry?
             // Adds VX to I
             I += V[X];
             Next();
