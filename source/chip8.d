@@ -519,7 +519,7 @@ class Chip8
           {
             // Sets I to the location of the sprite for the character in VX. 
             // Characters 0-F (in hexadecimal) are represented by a 4x5 font. 
-            I = fontset[V[X]];
+            I = V[X] * 5;
             Next();
           } break;
 
