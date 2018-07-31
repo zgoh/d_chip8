@@ -1,6 +1,8 @@
 import std.stdio;
 import std.string : format, fromStringz;
 
+import core.thread;
+
 import derelict.glfw3.glfw3;
 import derelict.opengl;
 import chip8;
@@ -67,9 +69,6 @@ void Init()
   glfwShowWindow(window);
   glfwMakeContextCurrent(window);
 
-  // Turning on vsync
-  glfwSwapInterval(1);
-
   // Reload after making context to use GL 3 core features
   DerelictGL3.reload();
 
@@ -103,6 +102,7 @@ void Frame()
   const auto width = emulator.GetWidth();
   const auto height = emulator.GetHeight();
 
+  int cycles = 0;
   while (isRunning && !glfwWindowShouldClose(window))
   {
     version(StepMode)
@@ -130,6 +130,13 @@ void Frame()
         GL_RGBA, GL_UNSIGNED_INT_8_8_8_8,
         cast(char *)buffer
       );
+
+      // Tries to sleep every 5 instructions
+      if (cycles++ == 5)
+      {
+        cycles = 0;
+        Thread.sleep(dur!("hnsecs")(1));
+      }
     }
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
