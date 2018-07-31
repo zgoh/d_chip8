@@ -46,6 +46,9 @@ class Chip8
   // Whether to draw or not
   bool drawFlag;
 
+  // Used for generating random numbers
+  Random gen;
+
   size_t GetWidth() const
   {
     return screenWidth;
@@ -392,9 +395,9 @@ class Chip8
         const auto X = (opcode >> 8) & 0x000F;
         const auto NN = opcode & 0x00FF;
 
-        Random gen;
-        const auto r = uniform(0x0, 0xFF, gen);
-        V[X] = r & NN;
+        const auto rand = uniform(0x0, 0xFF, gen);
+        V[X] = rand & NN;
+
         Next();
       } break;
 
