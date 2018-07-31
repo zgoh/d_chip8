@@ -119,7 +119,9 @@ void Frame()
       hasStep = false;
     }
 
-    emulator.Run();
+    emulator.EmulateCycle();
+    //emulator.Debug();
+
     if (emulator.DrawFlag())
     {
       buffer[] = 0;

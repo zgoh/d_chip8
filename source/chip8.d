@@ -129,14 +129,6 @@ class Chip8
       memory[i + 512] = buf[i];
   }
 
-  void Run()
-  {
-    // Emulate one cycle
-    EmulateCycle();
-
-    //Debug();
-  }
-
   void EmulateCycle()
   {
     // Fetch Opcode
