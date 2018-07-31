@@ -9,5 +9,18 @@
 	"dependencies": {
 		"derelict-glfw3": "~>4.0.0-beta.1",
 		"derelict-gl3": "~>2.0.0-beta.6"
-	}
+	},
+	"configurations": [
+		{
+			"name": "Normal",
+			"targetType": "executable",
+			"platforms": ["windows"]
+		},
+		{
+			"name": "StepMode",
+			"targetType": "executable",
+			"platforms": ["windows"],
+			"versions": ["StepMode"]
+		}
+	]
 }

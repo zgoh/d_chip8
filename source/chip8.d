@@ -134,7 +134,10 @@ class Chip8
     // Fetch Opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
 
-    // writefln("0x%x", opcode);
+    version(StepMode)
+    {
+      writefln("Opcode: 0x%x", opcode);
+    }
 
     // Decode Opcode
     // Execute Opcode
@@ -593,6 +596,7 @@ class Chip8
     if (soundTimer > 0)
     {
       if (soundTimer == 1)
+        //TODO: Play sound
         writeln("BEEP!");
       --soundTimer;
     }
@@ -651,6 +655,6 @@ class Chip8
       }
     }
     writef("\n");
-    writeln("++++++++++++++++++++++++++++++++++++++++++++++++");
+    writeln("++++++++++++++++++++++++++++++++++++++++++++++++\n");
   }
 }

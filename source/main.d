@@ -34,6 +34,11 @@ void main(string[] args)
   emulator = new Chip8();
   emulator.LoadGame(args[1]);
 
+  version(StepMode)
+  {
+    writeln("Running Emulator in Step mode.");
+  }
+
   InitGL();
   Frame();
   DestroyGL();
@@ -127,7 +132,10 @@ void Frame()
     }
 
     emulator.EmulateCycle();
-    //emulator.Debug();
+    version(StepMode)
+    {
+      emulator.Debug();
+    }
 
     if (emulator.DrawFlag())
     {
