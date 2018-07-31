@@ -494,10 +494,17 @@ class Chip8
 
           case 0x000A:  // 0xFX0A
           {
-            // TODO:
             // A key press is awaited, and then stored in VX. 
             // (Blocking Operation. All instruction halted until next key event)
-            Next();
+            for (char i = 0; i < 16; ++i)
+            {
+              // If key is pressed, we proceed
+              if (keys[i])
+              {
+                V[X] = i;
+                Next();
+              }
+            }
           } break;
 
           case 0x0015:  // 0xFX15
