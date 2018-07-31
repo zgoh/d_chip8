@@ -181,7 +181,7 @@ extern(C) nothrow
     // +-+-+-+-+                +-+-+-+-+
 
     char keyCode = 0x1;
-    char keyState;
+    char keyState = 0;
 
     if (action == GLFW_PRESS)
       keyState = 1;

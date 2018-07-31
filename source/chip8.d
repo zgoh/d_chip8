@@ -112,6 +112,8 @@ class Chip8
     // Reset timers
     delayTimer = 0;
     soundTimer = 0;
+
+    keys[] = 0;
   }
 
   void LoadGame(const string name)
