@@ -5,7 +5,6 @@ import derelict.glfw3.glfw3;
 import derelict.opengl;
 import chip8;
 import shaders;
-import core.thread;
 
 static bool isRunning = true;
 static GLFWwindow *window;
@@ -13,8 +12,12 @@ static Chip8 emulator;
 
 static GLuint fullscreenTriangleVAO;
 
-const static bool stepMode = false;
-static bool hasStep = false;
+static uint[] buffer;
+
+version (StepMode)
+{
+  static bool hasStep = false;
+}
 
 void main()
 {
@@ -48,7 +51,8 @@ void Init()
 
   const auto width = emulator.GetWidth();
   const auto height = emulator.GetHeight();
-  const auto buffer = GetBuffer(emulator.GetScreen(), width, height);
+
+  buffer = new uint[width * height];
   
   window = glfwCreateWindow(width * 5, height * 5, "CHIP-8", null, null);
   if (window is null)
@@ -101,7 +105,7 @@ void Frame()
 
   while (isRunning && !glfwWindowShouldClose(window))
   {
-    if (stepMode)
+    version(StepMode)
     {
       // Wait for key press before proceed to emulate
       if (!hasStep)
@@ -114,10 +118,12 @@ void Frame()
       }
       hasStep = false;
     }
+
     emulator.Run();
     if (emulator.DrawFlag())
     {
-      const auto buffer = GetBuffer(emulator.GetScreen(), width, height);
+      buffer[] = 0;
+      CopyBuffer(emulator.GetScreen());
       glTexSubImage2D(
         GL_TEXTURE_2D, 0, 0, 0,
         width, height,
@@ -131,8 +137,6 @@ void Frame()
     // Get buffer to draw from Chip-8
     glfwSwapBuffers(window);
     glfwPollEvents();
-
-    //Thread.sleep(dur!("msecs")(1));
   }
 }
 
@@ -147,17 +151,13 @@ void Stop() nothrow
   isRunning = false;
 }
 
-uint[] GetBuffer(const char[] screen, size_t width, size_t height)
+void CopyBuffer(const char[] screen)
 {
-  uint[] buffer = new uint[width * height];
-
   for (int i = 0; i < screen.length; ++i)
   {
     // CHIP 8 supports Black/White
     buffer[i] = screen[i] == 0 ? 0x000000FF : 0xFFFFFFFF;
   }
-
-  return buffer;
 }
 
 extern(C) nothrow
@@ -193,12 +193,15 @@ extern(C) nothrow
     case GLFW_KEY_ESCAPE:
       if (action == GLFW_PRESS) 
         Stop();
-      break;
+      return;
 
-    case GLFW_KEY_SPACE:
+    version(StepMode)
+    {
+      case GLFW_KEY_SPACE:
       if (action == GLFW_PRESS)
         hasStep = true;
-      break;
+      return;
+    }
     
     /*
       CHIP-8 Keys
@@ -268,10 +271,9 @@ extern(C) nothrow
       break;
 
     default:
-      break;
+      return;
     }
-
-    if (keyCode <= 0xF)
-      emulator.SetKeys(keyCode, keyState);
+    
+    emulator.SetKeys(keyCode, keyState);
   } 
 }
