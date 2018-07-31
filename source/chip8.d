@@ -427,6 +427,12 @@ class Chip8
             if (data & (0x80 >> cx))
             {
               const auto currentID = screenWidth * (cy + py) + cx + px;
+              
+              // Prevent drawing out of screen
+              if (currentID < 0 || 
+                  currentID >= screen.length)
+                continue;
+                
               if (screen[currentID])
                 V[0xF] = 1;
 
