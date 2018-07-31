@@ -21,19 +21,26 @@ version (StepMode)
   static bool hasStep = false;
 }
 
-void main()
+void main(string[] args)
 {
-  Init();
-  Frame();
-  Destroy();
-}
+  if (args.length < 2)
+  {
+    writeln(args[0] , ": missing operand");
+    writeln("Try ", args[0], " [ROM PATH]");
+    return;
+  }
 
-void Init()
-{
   // Load the designated rom and run the emulator
   emulator = new Chip8();
-  emulator.LoadGame("roms/pong.ch8");
+  emulator.LoadGame(args[1]);
 
+  InitGL();
+  Frame();
+  DestroyGL();
+}
+
+void InitGL()
+{
   // Using Derelict to load openGL/GLFW
   DerelictGL3.load();
   DerelictGLFW3.load("dlls\\glfw3.dll");
@@ -149,18 +156,18 @@ void Frame()
   }
 }
 
-void Destroy()
+void DestroyGL()
 {
   glfwDestroyWindow(window);
   glfwTerminate();
 }
 
-void Stop() nothrow
+static void Stop() nothrow
 {
   isRunning = false;
 }
 
-void CopyBuffer(const char[] screen)
+static void CopyBuffer(const char[] screen)
 {
   for (int i = 0; i < screen.length; ++i)
   {
