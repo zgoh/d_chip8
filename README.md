@@ -54,6 +54,7 @@ TODO
 * Super Chip-8 implementation
 * Accurate speed?
 * Add beep sound (Probably not high priority)
+* Add quirks toggle (Refer to this [emulator](https://mir3z.github.io/chip8-emu/doc/#toc1))
     
 References
 ----------
