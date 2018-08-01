@@ -8,7 +8,7 @@ Currently only supports Chip-8 instructions. Emulation speed is not accurate.
 
 Contents
 --------
-* [Building](building-(only-tested-on-windows))
+* [Building](building-only-tested-on-windows)
 * [Usage](#usage)
 * [Keys](#keys)
 * [TODO](#todo)
