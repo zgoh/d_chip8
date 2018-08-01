@@ -6,6 +6,8 @@ Simple Chip-8 interpreter written in D. It uses the GLFW backend to draw the gam
 
 Currently only supports Chip-8 instructions. Emulation speed is not accurate.
 
+Note: Roms are not included with this interpreter, you can always download it from the net or make your own.
+
 Contents
 --------
 * [Building](#building)
