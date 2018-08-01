@@ -8,7 +8,7 @@ Currently only supports Chip-8 instructions. Emulation speed is not accurate.
 
 Contents
 --------
-* [Building](#building-only-tested-on-windows)
+* [Building](#building)
 * [Usage](#usage)
 * [Keys](#keys)
 * [TODO](#todo)
@@ -30,7 +30,7 @@ Usage
     
 Keys
 ----
-[Taken from](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
+Key mapping taken from [here](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
 
     Keypad                   Keyboard
     +-+-+-+-+                +-+-+-+-+
