@@ -14,8 +14,10 @@ Contents
 * [TODO](#todo)
 * [References](#references)
 
-Building (Only tested on Windows)
----------------------------------
+Building
+--------
+Note: Only tested on Windows
+
     # Normal mode
     $ dub
     
