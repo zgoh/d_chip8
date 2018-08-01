@@ -1,10 +1,18 @@
 CHIP-8 Interpreter in D
 =======================
-Simple Chip8 interpreter written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
-
-Screenshots
------------
 ![alt text](https://raw.githubusercontent.com/zgoh/d_chip8/master/screenshots/Pong.png)
+
+Simple Chip-8 interpreter written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
+
+Currently only supports Chip-8 instructions. Emulation speed is not accurate.
+
+Contents
+--------
+* [Building](building-(only-tested-on-windows))
+* [Usage](#usage)
+* [Keys](#keys)
+* [TODO](#todo)
+* [References](#references)
 
 Building (Only tested on Windows)
 ---------------------------------
@@ -36,7 +44,15 @@ Keys
     [Space]   => Next Opcode (Only in step mode)
     [Escape]  => Escape the emulator
     
+TODO
+----
+* Pretty debug (Came across this [Chip-8](https://massung.github.io/CHIP-8/) implemented in Go and I wanted something like this)
+* Super Chip-8 implementation
+* Accurate speed?
+* Add beep sound (Probably not high priority)
+    
 References
 ----------
-- http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
-- http://en.wikipedia.org/wiki/CHIP-8
+* http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
+* http://en.wikipedia.org/wiki/CHIP-8
+* http://www.pong-story.com/chip8/
