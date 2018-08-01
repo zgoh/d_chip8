@@ -1,6 +1,6 @@
-CHIP-8 Emulator in D
-====================
-Simple Chip8 emulator written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
+CHIP-8 Interpreter in D
+=======================
+Simple Chip8 interpreter written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
 
 Screenshots
 -----------
