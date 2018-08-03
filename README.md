@@ -1,13 +1,25 @@
-CHIP-8 Emulator in D
-====================
-Simple Chip8 emulator written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
-
-Screenshots
------------
+CHIP-8 Interpreter in D
+=======================
 ![alt text](https://raw.githubusercontent.com/zgoh/d_chip8/master/screenshots/Pong.png)
 
-Building (Only tested on Windows)
----------------------------------
+Simple Chip-8 interpreter written in D. It uses the GLFW backend to draw the game screen. It does not have any sound support at the moment.
+
+Currently only supports Chip-8 instructions. Emulation speed is not accurate.
+
+Note: Roms are not included with this interpreter, you can always download it from the net or make your own.
+
+Contents
+--------
+* [Building](#building)
+* [Usage](#usage)
+* [Keys](#keys)
+* [TODO](#todo)
+* [References](#references)
+
+Building
+--------
+Note: Only tested on Windows
+
     # Normal mode
     $ dub
     
@@ -20,7 +32,7 @@ Usage
     
 Keys
 ----
-[Taken from](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
+Key mapping taken from [here](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
 
     Keypad                   Keyboard
     +-+-+-+-+                +-+-+-+-+
@@ -36,7 +48,16 @@ Keys
     [Space]   => Next Opcode (Only in step mode)
     [Escape]  => Escape the emulator
     
+TODO
+----
+* Pretty debug (Came across this [Chip-8](https://massung.github.io/CHIP-8/) implemented in Go and I wanted something like this)
+* Super Chip-8 implementation
+* Accurate speed?
+* Add beep sound (Probably not high priority)
+* Add quirks toggle (Refer to this [emulator](https://mir3z.github.io/chip8-emu/doc/#toc1))
+    
 References
 ----------
-- http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
-- http://en.wikipedia.org/wiki/CHIP-8
+* http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
+* http://en.wikipedia.org/wiki/CHIP-8
+* http://www.pong-story.com/chip8/
