@@ -151,7 +151,9 @@ class Chip8
         {
           case 0x0000:  // 0x0NNN 
           {
-            // Calls RCA 1802 program at address NNN. Not necessary for most ROMs. 
+            // Calls RCA 1802 program at address NNN. Not necessary for most ROMs.
+            writeln("Warn: Not implemented.");
+            Next();
           } break;
 
           case 0x00E0:
@@ -187,18 +189,18 @@ class Chip8
       case 0x1000:  // 0x1NNN 
       {
         // Jump to address NNN
-        const auto address = opcode & 0x0FFF;
-        pc = address;
+        const auto NNN = opcode & 0x0FFF;
+        pc = NNN;
       } break;
 
       case 0x2000:  // 0x2NNN
       {
         // Calls subroutine at NNN
-        const auto address = opcode & 0x0FFF;
+        const auto NNN = opcode & 0x0FFF;
 
         // Push current pc onto the stack
         stack[sp++] = pc;
-        pc = address;
+        pc = NNN;
       } break;
 
       case 0x3000:  // 0x3XNN 
