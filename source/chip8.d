@@ -29,7 +29,7 @@ class Chip8
   const size_t screenHeight = 32;
   char[screenWidth * screenHeight] screen;
 
-  // Interrupts and hardware registers, CHIP-8 has none, but there are two timer that count ay 60 Hz,
+  // Interrupts and hardware registers, CHIP-8 has none, but there are two timer that count at 60 Hz,
   // will count down if set above zero.
   char delayTimer;
 
